@@ -1,6 +1,7 @@
 package com.gh.sammie.fragmentlogindresign.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
@@ -22,14 +23,21 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gh.sammie.fragmentlogindresign.Common.Common;
+import com.gh.sammie.fragmentlogindresign.MainActivity;
 import com.gh.sammie.fragmentlogindresign.R;
 import com.gh.sammie.fragmentlogindresign.Utills.CustomToast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,6 +56,7 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
 
 
     private FirebaseAuth mAuth;
+    private DatabaseReference mDatabaseUsers;
 
 
     //Progress dialog
@@ -62,7 +71,7 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
 
         mAuth = FirebaseAuth.getInstance();
-//        mDatabaseUsers = FirebaseDatabase.getInstance().getReference().child("User");
+        mDatabaseUsers = FirebaseDatabase.getInstance().getReference().child("User");
 
         mProgress = new ProgressDialog(getActivity());
 
@@ -242,40 +251,41 @@ public class Login_Fragment extends Fragment implements View.OnClickListener {
 
     private void checkUserExist() {
 
-//        if (mAuth.getCurrentUser() != null) {
-//
-//
-//            final String user_id = mAuth.getCurrentUser().getUid();
-//
-//            mDatabaseUsers.addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                    if ( !dataSnapshot.hasChild(user_id )) {
-//
-//                        Toast.makeText(getActivity(), "Welcome !", Toast.LENGTH_LONG).show();
-//                        //change to  new toast
-//
-//                        Intent mainIntent = new Intent(getActivity(), MainActivity.class);
-//                        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                        startActivity(mainIntent);
-//
-//                    }else{
+        if (mAuth.getCurrentUser() != null) {
+
+
+            final String user_id = mAuth.getCurrentUser().getUid();
+
+            mDatabaseUsers.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    if ( !dataSnapshot.hasChild(user_id )) {
+
+                        Toast.makeText(getActivity(), "Welcome !", Toast.LENGTH_LONG).show();
+                        //change to  new toast
+
+                        Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+                        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(mainIntent);
+
+                    }
+//                    else
+//                        {
 //
 //                        new CustomToast().Show_Toast(getActivity(), view,
 //                                "Please Check your credential or Create new Account");
 //                    }
-//
-//                }
-//                @Override
-//                public void onCancelled(DatabaseError databaseError) {
-//
-//                }
-//
-//
-//            });
-//
-//        }
+
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+
+            });
+
+        }
 
 
 
